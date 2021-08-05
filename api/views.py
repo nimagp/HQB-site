@@ -1,7 +1,9 @@
+from django.core.checks import messages
 from django.shortcuts import render
-from django.http import HttpResponse
-from .models import group, questions
+from django.http import HttpResponse, response
+from .models import group,Server
 import json
+from django.views.decorators.csrf import csrf_exempt
 # Create your views here.
 def get_pack(request):
     PackNumber=request.GET.get("pack")
@@ -15,4 +17,69 @@ def get_pack(request):
     for q in question:
         response_data[i]=q.question
         i += 1
+    return HttpResponse(json.dumps(response_data), content_type="application/json")
+@csrf_exempt
+def get_pack_by_server(request):
+    response_data={}
+    server_giuld=""
+    if not request.method == "POST":
+         response_data["error"]="please use a post request"
+         return HttpResponse(json.dumps(response_data), content_type="application/json")
+    server_giuld=request.POST.get('server')
+    print(server_giuld)
+    if 'number_of_packs' not in request.POST or request.POST["number_of_packs"]== 1:
+        try:
+            s=Server.objects.get(giuld=server_giuld)
+        except:
+            response_data["error"]="this server does not registerd! please register server"
+            return HttpResponse(json.dumps(response_data), content_type="application/json")
+        pack=s.pack
+        g=group.objects.get(pk=pack)
+        question=g.questions_set.all().order_by('published_date')
+        s.pack=pack + 1
+        s.save()
+        i=1
+        response_data['ok'][g.title]={}
+        response_data['ok']={}
+        for q in question:
+            response_data['ok'][g.title][i]=q.question
+            i += 1
+    elif int(request.POST["number_of_packs"]) > 3 or int(request.POST["number_of_packs"]) < 1:
+        response_data["error"]="Please use a number in the range 1 to 3"
+        return HttpResponse(json.dumps(response_data), content_type="application/json")
+    else:
+        try:
+            s=Server.objects.get(giuld=server_giuld)
+        except:
+            response_data["error"]="this server does not registerd! please register server"
+            return HttpResponse(json.dumps(response_data), content_type="application/json")
+        number_of_packs=request.POST["number_of_packs"]
+        response_data['ok']={}
+        for z in range(1,int(number_of_packs)+1):
+            pack=s.pack
+            g=group.objects.get(pk=pack)
+            question=g.questions_set.all().order_by('published_date')
+            s.pack=pack + 1
+            s.save()
+            i=1
+            response_data['ok'][g.title]={}
+            for q in question:
+                response_data['ok'][g.title][i]=q.question
+                i += 1
+    return HttpResponse(json.dumps(response_data), content_type="application/json")
+@csrf_exempt
+def register_server(request):
+    response_data={}
+    if not request.method == "POST":
+        response_data["error"]="please use a post request"
+        return HttpResponse(json.dumps(response_data), content_type="application/json")
+    try:
+        server=request.POST["server"]
+        name=request.POST["server_name"]
+    except:
+        response_data["error"]="You have not sent some required parameters!"
+        return HttpResponse(json.dumps(response_data), content_type="application/json")
+    s=Server(name=name,giuld=server,pack=1)
+    s.save()
+    response_data['message']='Successful,registerd'
     return HttpResponse(json.dumps(response_data), content_type="application/json")

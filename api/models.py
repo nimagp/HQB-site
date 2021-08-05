@@ -19,3 +19,12 @@ class questions(models.Model):
 
     def __str__(self):
         return self.question
+class Server(models.Model):
+    name=models.CharField(max_length=200)
+    giuld=models.CharField(max_length=200)
+    pack=models.IntegerField(default=1)
+    class Meta: 
+        ordering=['name']
+
+    def __str__(self):
+        return self.name
