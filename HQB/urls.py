@@ -13,7 +13,7 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-handler404 = 'Site.views.error_404'
+
 from django.contrib import admin
 from django.urls import path,include
 urlpatterns = [
@@ -21,3 +21,4 @@ urlpatterns = [
     path('api/', include('api.urls')),
 
 ]
+handler404 = "HQB.views.page_not_found_view"
