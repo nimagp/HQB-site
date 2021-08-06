@@ -12,10 +12,12 @@ def get_pack(request):
     # for question in Questions:
     #     print(question)
     i=1
-    #just a commit :)
-    response_data = {"title":g.title}
+    #just a commit
+    response_data={}
+    response_data["ok"]={}
+    response_data["ok"][g.title]={}
     for q in question:
-        response_data[i]=q.question
+        response_data["ok"][g.title][i]=q.question
         i += 1
     return HttpResponse(json.dumps(response_data), content_type="application/json")
 @csrf_exempt
