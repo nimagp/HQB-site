@@ -56,14 +56,18 @@ def get_pack_by_server(request):
             response_data["error"]="this server does not registerd! please register server"
             return HttpResponse(json.dumps(response_data),status=404, content_type="application/json")
         number_of_packs=request.POST["number_of_packs"]
-        response_data['ok']={}
         for z in range(1,int(number_of_packs)+1):
             pack=s.pack
-            g=group.objects.get(pk=pack)
+            try:
+                g=group.objects.get(pk=pack)
+            except:
+                response_data["error"]="There isnt new pack for you!please wait for new packs"
+                return HttpResponse(json.dumps(response_data),status=456, content_type="application/json")
             question=g.questions_set.all().order_by('published_date')
             s.pack=pack + 1
             s.save()
             i=1
+            response_data['ok']={}
             response_data['ok'][g.title]={}
             for q in question:
                 response_data['ok'][g.title][i]=q.question
