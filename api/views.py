@@ -1,18 +1,21 @@
 from django.core.checks import messages
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponse, response
 from .models import group,Server
 import json
+from django.core import serializers
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
 # Create your views here.
-def get_pack(request):
-    PackNumber=request.GET.get("pack")
-    g=group.objects.get(pk=PackNumber)
+def get_pack(request,pack):
+    # PackNumber=request.GET.get("pack")
+    print(f"pack is {pack}")
+    g=get_object_or_404(group, pk=pack)
     question=g.questions_set.all().order_by('published_date')
     # for question in Questions:
     #     print(question)
     i=1
-    #just a commit
+    # just a commit
     response_data={}
     response_data["ok"]={}
     response_data["ok"][g.title]={}
@@ -21,20 +24,14 @@ def get_pack(request):
         i += 1
     return HttpResponse(json.dumps(response_data), content_type="application/json")
 @csrf_exempt
+@require_POST
 def get_pack_by_server(request):
     response_data={}
     server_giuld=""
-    if not request.method == "POST":
-         response_data["error"]="please use a post request"
-         return HttpResponse(json.dumps(response_data), content_type="application/json",status=405)
     server_giuld=request.POST.get('server')
     print(server_giuld)
     if 'number_of_packs' not in request.POST or request.POST["number_of_packs"]== 1:
-        try:
-            s=Server.objects.get(giuld=server_giuld)
-        except:
-            response_data["error"]="this server does not registerd! please register server"
-            return HttpResponse(json.dumps(response_data), content_type="application/json",status=404)
+        s=get_object_or_404(Server,giuld=server_giuld)
         pack=s.pack
         g=group.objects.get(pk=pack)
         question=g.questions_set.all().order_by('published_date')
@@ -50,11 +47,7 @@ def get_pack_by_server(request):
         response_data["error"]="Please use a number in the range 1 to 3"
         return HttpResponse(json.dumps(response_data), content_type="application/json",status=400)
     else:
-        try:
-            s=Server.objects.get(giuld=server_giuld)
-        except:
-            response_data["error"]="this server does not registerd! please register server"
-            return HttpResponse(json.dumps(response_data),status=404, content_type="application/json")
+        s=get_object_or_404(Server,giuld=server_giuld)
         number_of_packs=request.POST["number_of_packs"]
         for z in range(1,int(number_of_packs)+1):
             pack=s.pack
@@ -74,11 +67,9 @@ def get_pack_by_server(request):
                 i += 1
     return HttpResponse(json.dumps(response_data), content_type="application/json")
 @csrf_exempt
+@require_POST
 def register_server(request):
     response_data={}
-    if not request.method == "POST":
-        response_data["error"]="please use a post request"
-        return HttpResponse(json.dumps(response_data), content_type="application/json",status=405)
     try:
         server=request.POST["server"]
         name=request.POST["server_name"]

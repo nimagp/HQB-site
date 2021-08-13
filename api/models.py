@@ -1,7 +1,7 @@
 from django.db import models
 
 class group(models.Model):
-    title = models.CharField(max_length=30)
+    title = models.CharField(max_length=50)
 
     class Meta:
         ordering=['title']
@@ -11,7 +11,7 @@ class group(models.Model):
 
 class questions(models.Model):
     question = models.CharField(max_length=200)
-    group = models.ManyToManyField(group)
+    group = models.ForeignKey(group,on_delete=models.DO_NOTHING)
     published_date = models.DateTimeField(blank=True, null=True)
 
     class Meta:
