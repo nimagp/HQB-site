@@ -33,7 +33,11 @@ def get_pack_by_server(request):
     if 'number_of_packs' not in request.POST or request.POST["number_of_packs"]== 1:
         s=get_object_or_404(Server,giuld=server_giuld)
         pack=s.pack
-        g=group.objects.get(pk=pack)
+        try:
+            g=group.objects.get(pk=pack)
+        except:
+            response_data["error"]="There isnt new pack for you!please wait for new packs"
+            return HttpResponse(json.dumps(response_data),status=456, content_type="application/json")
         question=g.questions_set.all().order_by('published_date')
         s.pack=pack + 1
         s.save()
