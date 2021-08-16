@@ -18,9 +18,9 @@ def get_pack(request,pack):
     # just a commit
     response_data={}
     response_data["ok"]={}
-    response_data["ok"][g.title]={}
+    response_data["ok"]["title"]=g.title
     for q in question:
-        response_data["ok"][g.title][i]=q.question
+        response_data["ok"][i]=q.question
         i += 1
     return HttpResponse(json.dumps(response_data), content_type="application/json")
 @csrf_exempt
@@ -38,10 +38,10 @@ def get_pack_by_server(request):
         s.pack=pack + 1
         s.save()
         i=1
-        response_data['ok'][g.title]={}
-        response_data['ok']={}
+        response_data["ok"]={}
+        response_data["ok"]["title"]=g.title
         for q in question:
-            response_data['ok'][g.title][i]=q.question
+            response_data["ok"][i]=q.question
             i += 1
     elif int(request.POST["number_of_packs"]) > 3 or int(request.POST["number_of_packs"]) < 1:
         response_data["error"]="Please use a number in the range 1 to 3"
@@ -60,10 +60,10 @@ def get_pack_by_server(request):
             s.pack=pack + 1
             s.save()
             i=1
-            response_data['ok']={}
-            response_data['ok'][g.title]={}
+            response_data["ok"]={}
+            response_data["ok"]["title"]=g.title
             for q in question:
-                response_data['ok'][g.title][i]=q.question
+                response_data["ok"][i]=q.question
                 i += 1
     return HttpResponse(json.dumps(response_data), content_type="application/json")
 @csrf_exempt
