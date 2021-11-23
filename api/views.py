@@ -40,7 +40,7 @@ def get_pack_by_server(request):
         except:
             response_data["error"]="There isnt new pack for you!please wait for new packs"
             return HttpResponse(json.dumps(response_data),status=456, content_type="application/json")
-        question=g.questions_set.all().order_by('published_date')
+        question=g.Questions_set.all().order_by('published_date')
         s.pack=pack + 1
         s.save()
         i=1
