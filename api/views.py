@@ -86,6 +86,7 @@ def register_server(request):
     s.save()
     response_data['message']='Successful,registerd'
     return HttpResponse(json.dumps(response_data), content_type="application/json")
+@csrf_exempt
 def add_question_pack(request):
     if request.method == "POST":
         try:
