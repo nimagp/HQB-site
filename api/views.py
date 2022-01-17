@@ -31,7 +31,7 @@ def get_pack_by_server(request):
     try:
         ServerID=request.POST.get('server')
         if 'number_of_packs' not in request.POST or request.POST["number_of_packs"]== 1:
-            ServerModel=Server.objects.get_or_create(giuld=ServerID)
+            ServerModel=get_object_or_404(Server,giuld=ServerID)
             QuestionPack=get_object_or_404(Pack,pk=ServerModel.pack)
             Questions=QuestionPack.question_set.all().order_by('published_date')
             ServerModel.pack = ServerModel.pack + 1
@@ -61,6 +61,24 @@ def get_pack_by_server(request):
 
         
 
+    except Exception as e:
+        ResponseData["Status"] = "Error"
+        ResponseData["Error"] = str(e.exc)
+    return HttpResponse(json.dumps(ResponseData), content_type="application/json",status=ResponseCode)
+@csrf_exempt
+@require_POST
+def register_server(request):
+    ResponseData={}
+    ResponseCode = 200
+    try:
+        if 'server' and 'server_name' not in request.POST:
+            ResponseCode = 400
+            raise Exception("Some parameters are missing")
+        ServerID=request.POST.get('server')
+        ServerName=request.POST.get('server_name')
+        ServerModel=Server(name=ServerName,giuld=ServerID,pack=1)
+        ServerModel.save()
+        ResponseData["Status"] = "OK"
     except Exception as e:
         ResponseData["Status"] = "Error"
         ResponseData["Error"] = str(e)
