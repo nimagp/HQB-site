@@ -65,24 +65,6 @@ def get_pack_by_server(request):
         ResponseData["Status"] = "Error"
         ResponseData["Error"] = str(e)
     return HttpResponse(json.dumps(ResponseData), content_type="application/json",status=ResponseCode)
-@csrf_exempt
-@require_POST
-def register_server(request):
-    ResponseData={}
-    ResponseCode = 200
-    try:
-        if 'server' and 'server_name' not in request.POST:
-            ResponseCode = 400
-            raise Exception("Some parameters are missing")
-        ServerID=request.POST.get('server')
-        ServerName=request.POST.get('server_name')
-        ServerModel=Server(name=ServerName,giuld=ServerID,pack=1)
-        ServerModel.save()
-        ResponseData["Status"] = "OK"
-    except Exception as e:
-        ResponseData["Status"] = "Error"
-        ResponseData["Error"] = str(e)
-    return HttpResponse(json.dumps(ResponseData), content_type="application/json",status=ResponseCode)
 @require_POST
 @csrf_exempt
 def add_question_pack(request):
