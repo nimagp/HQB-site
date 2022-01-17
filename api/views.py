@@ -31,7 +31,7 @@ def get_pack_by_server(request):
     try:
         ServerID=request.POST.get('server')
         if 'number_of_packs' not in request.POST or request.POST["number_of_packs"]== 1:
-            ServerModel=get_object_or_404(Server,giuld=ServerID)
+            ServerModel=Server.objects.get_or_create(giuld=ServerID)
             QuestionPack=get_object_or_404(Pack,pk=ServerModel.pack)
             Questions=QuestionPack.question_set.all().order_by('published_date')
             ServerModel.pack = ServerModel.pack + 1
