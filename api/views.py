@@ -32,7 +32,13 @@ def get_pack_by_server(request):
         ServerID=request.POST.get('server')
         if 'number_of_packs' not in request.POST or request.POST["number_of_packs"]== 1:
             ServerModel=get_object_or_404(Server,giuld=ServerID)
-            QuestionPack=get_object_or_404(Pack,pk=ServerModel.pack)
+            try:
+                QuestionPack = Pack.objects.get(pk=ServerModel.pack)
+            except Pack.DoesNotExist:
+                ResponseData["Status"] = "Error"
+                ResponseData["Error"] = "No Pack Found"
+                ResponseCode=456
+                return HttpResponse(json.dumps(ResponseData), content_type="application/json",status=ResponseCode)
             Questions=QuestionPack.question_set.all().order_by('published_date')
             ServerModel.pack = ServerModel.pack + 1
             ServerModel.save()
@@ -49,7 +55,13 @@ def get_pack_by_server(request):
             ResponseData["Packs"] = {}
             for i in range(int(request.POST["number_of_packs"])):
                 ServerModel=get_object_or_404(Server,giuld=ServerID)
-                QuestionPack=get_object_or_404(Pack,pk=ServerModel.pack)
+                try:
+                    QuestionPack = Pack.objects.get(pk=ServerModel.pack)
+                except Pack.DoesNotExist:
+                    ResponseData["Status"] = "Error"
+                    ResponseData["Error"] = "No Pack Found"
+                    ResponseCode=456
+                    return HttpResponse(json.dumps(ResponseData), content_type="application/json",status=ResponseCode)
                 Questions=QuestionPack.question_set.all().order_by('published_date')
                 ServerModel.pack = ServerModel.pack + 1
                 ServerModel.save()
