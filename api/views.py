@@ -95,29 +95,29 @@ def register_server(request):
         ResponseData["Status"] = "Error"
         ResponseData["Error"] = str(e)
     return HttpResponse(json.dumps(ResponseData), content_type="application/json",status=ResponseCode)
-@require_POST
-@csrf_exempt
+@login_required
 def add_question_pack(request):
-    ResponseData={}
-    try:
-        if ('pack_name',"q1","q2","q3","q4","q5") not in request.POST:
-            ResponseCode = 400
+    Result=""
+    if request.method == 'GET':
+        return render(request, 'api/add_pack.html')
+    elif request.method == 'POST':
+        if 'pack_name'and "q1" and "q2"and "q3"and "q4"and "q5" not in request.POST:
             raise Exception("Some parameters are missing")
-        PackModel = Pack(title=request.POST["pack_name"])
-        PackModel.save()
-        QuestionModel1 = Question(question=request.POST["q1"],pack=PackModel)
-        QuestionModel1.save()
-        QuestionModel2 = Question(question=request.POST["q2"],pack=PackModel)
-        QuestionModel2.save()
-        QuestionModel3 = Question(question=request.POST["q3"],pack=PackModel)
-        QuestionModel3.save()
-        QuestionModel4 = Question(question=request.POST["q4"],pack=PackModel)
-        QuestionModel4.save()
-        QuestionModel5 = Question(question=request.POST["q5"],pack=PackModel)
-        QuestionModel5.save()
-        ResponseData["Status"] = "OK"
-    except Exception as e:
-        ResponseData["Status"] = "Error"
-        ResponseData["Error"] = str(e)
-    return HttpResponse(json.dumps(ResponseData), content_type="application/json",status=ResponseCode)
+        try: 
+            PackModel = Pack(title=request.POST["pack_name"])
+            PackModel.save()
+            QuestionModel1 = Question(question=request.POST["q1"],Pack=PackModel)
+            QuestionModel1.save()
+            QuestionModel2 = Question(question=request.POST["q2"],Pack=PackModel)
+            QuestionModel2.save()
+            QuestionModel3 = Question(question=request.POST["q3"],Pack=PackModel)
+            QuestionModel3.save()
+            QuestionModel4 = Question(question=request.POST["q4"],Pack=PackModel)
+            QuestionModel4.save()
+            QuestionModel5 = Question(question=request.POST["q5"],Pack=PackModel)
+            QuestionModel5.save()
+            Result = "Success"
+        except Exception as e:
+            Result = "Error: " + str(e)
+    return render(request, 'api/add_pack.html', {'Result': Result})
     

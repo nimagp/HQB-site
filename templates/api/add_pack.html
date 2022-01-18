@@ -1,0 +1,59 @@
+{% load static %}
+<html>    
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Add Pack</title>
+        <!-- Tell the browser to be responsive to screen width -->
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta charset="utf-8">
+        <link rel="stylesheet" href="http://{{ request.get_host }}{% static 'add.css' %}">
+
+    </head>
+        <body>
+            {{ request.get_host }}
+            {% block content %}
+                {% if Result == "Success" %}
+                    <div class="alert alert-success">
+                        <strong>Success!</strong>
+                    </div>
+                {% endif %}
+                {% if "Error" in Result %}
+                    <div class="alert alert-error">
+                        <strong>Error!</strong> {{ Result }}
+                    </div>
+                {% endif %}
+                {% if not Result %}
+                        <form action="{% url 'add_pack' %}" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
+                            <div class="form-group">
+                                <label for="pack_name">Pack Name</label>
+                                <input type="text" class="form-control" id="pack_name" placeholder="Enter pack name" name="pack_name">
+                            </div>
+                            <div class="form-group">
+                                <Label for="question-1">First Question</label>
+                                <input type="text" class="form-control" id="q1" placeholder="Enter question" name="q1">
+                            </div>
+                            <div class="form-group">
+                                <Label for="question-2">Second Question</label>
+                                <input type="text" class="form-control" id="q2" placeholder="Enter question" name="q2">
+                            </div>
+                            <div class="form-group">
+                                <Label for="question-3">Third Question</label>
+                                <input type="text" class="form-control" id="q3" placeholder="Enter question" name="q3">
+                            </div>
+                            <div class="form-group">
+                                <Label for="question-4">Fourth Question</label>
+                                <input type="text" class="form-control" id="q4" placeholder="Enter question" name="q4">
+                            </div>
+                            <div class="form-group">
+                                <Label for="question-5">Fifth Question</label>
+                                <input type="text" class="form-control" id="q5" placeholder="Enter question" name="q5">
+                            </div>
+                            <input type="submit" class="btn btn-primary" value="Submit">
+                        </form>
+                {% endif %}
+            {% endblock %}
+    </body>
+</html>
